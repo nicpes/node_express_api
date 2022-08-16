@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TvSerie{
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(45)
+  description String @db.VarChar(255)
+  year Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tvSeasons TvSeason[] @relation("TvSerieHasTvSeason")
+}
+
+model TvSeason {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(45)
+  description String @db.VarChar(255)
+  year Int 
+
+  tvSerie TvSerie @relation("TvSerieHasTvSeason", fields: [tvSerieId], references: [id], onDelete: Cascade)
+  tvSerieId Int 
+
+  tvEpisodes TvEpisode[] @relation("TvSeasonHasTvEpisode")
+}
+
+model TvEpisode {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(45)
+  description String @db.VarChar(255)
+  year Int 
+
+  tvSeason TvSeason @relation("TvSeasonHasTvEpisode", fields: [tvSeasonId], references: [id], onDelete: Cascade)
+  tvSeasonId Int
+}
